@@ -3136,7 +3136,7 @@ function AdminQRScanner({students, records, settings, onReload}) {
 // ============================================================
 // MAIN PANELS
 // ================================================================
-function AdminPanel({onLogout}) {
+function AdminPanel({onLogout,isDemo=false}) {
   const[page,setPage]=useState('dashboard');
   const[loading,setLoading]=useState(true);
   const[showTheme,setShowTheme]=useState(false);
@@ -3207,7 +3207,7 @@ function AdminPanel({onLogout}) {
           page==='students'&&h(AdminStudents,{students,onReload:reload,settings}),
           page==='attendance'&&h(AdminAttendance,{records,students,settings}),
           page==='leaves'&&h(AdminLeaves,{leaves,onReload:reload}),
-          page==='announcements'&&h(AdminAnnouncements,{announcements,onReload:reload,students}),
+          page==='announcements'&&h(AdminAnnouncements,{announcements:anns,onReload:reload,students}),
           page==='devices'&&h(AdminDevices,{students,onReload:reload}),
           page==='location'&&h(AdminLocation,{settings,onSave:saveSettings}),
           page==='qrscan'&&h(AdminQRScanner,{students,records,settings,onReload:reload}),
@@ -3217,7 +3217,7 @@ function AdminPanel({onLogout}) {
           page==='holidays'&&h(AdminHolidays,{holidays,onReload:reload}),
           page==='schedule'&&h(AdminSchedule,{settings,onSave:saveSettings}),
           page==='multiadmin'&&h(AdminMultiAdmin,{onReload:reload}),
-          page==='backup'&&h(AdminBackup,{students,records,leaves,announcements,settings}),
+          page==='backup'&&h(AdminBackup,{students,records,leaves,announcements:anns,settings}),
           page==='activity'&&h(AdminActivityLog),
           page==='settings'&&h(AdminSettings,{settings,onSave:saveSettings}),
           page==='settings'&&h('div',{style:Object.assign({},gl,{borderRadius:'16px',padding:'20px',border:'1px solid rgba(239,68,68,.15)',marginTop:'20px'})},h('p',{style:{fontFamily:ORB,fontSize:'12px',color:'rgba(248,113,113,.7)',letterSpacing:'0.1em',textTransform:'uppercase',marginBottom:'12px'}},'Danger Zone'),h('button',{onClick:clearRecords,style:{width:'100%',padding:'12px',borderRadius:'12px',fontSize:'12px',fontFamily:MONO,color:'#f87171',border:'1px solid rgba(239,68,68,.3)',background:'rgba(239,68,68,.05)',cursor:'pointer'}},'Hapus Semua Absensi'))
@@ -3946,6 +3946,24 @@ function MapelRekap({teacher, students, subjAtt, kelasList}) {
 // ================================================================
 // MAIN APP
 // ================================================================
+
+class ErrorBoundary extends React.Component {
+  constructor(props){super(props);this.state={err:null};}
+  static getDerivedStateFromError(e){return{err:e};}
+  render(){
+    if(this.state.err){
+      return React.createElement('div',{style:{minHeight:'100vh',display:'flex',alignItems:'center',justifyContent:'center',background:'#0a0a0f',padding:'24px'}},
+        React.createElement('div',{style:{maxWidth:'480px',width:'100%',background:'rgba(239,68,68,.08)',border:'1px solid rgba(239,68,68,.3)',borderRadius:'16px',padding:'24px'}},
+          React.createElement('p',{style:{color:'#f87171',fontFamily:'monospace',fontSize:'12px',marginBottom:'8px',letterSpacing:'.1em'}},'⚠️ RUNTIME ERROR'),
+          React.createElement('p',{style:{color:'#fca5a5',fontFamily:'monospace',fontSize:'11px',wordBreak:'break-all',lineHeight:'1.6'}},String(this.state.err)),
+          React.createElement('button',{onClick:()=>this.setState({err:null}),style:{marginTop:'16px',padding:'10px 20px',borderRadius:'10px',background:'rgba(239,68,68,.15)',border:'1px solid rgba(239,68,68,.3)',color:'#f87171',cursor:'pointer',fontFamily:'monospace',fontSize:'11px'}},'Coba Lagi')
+        )
+      );
+    }
+    return this.props.children;
+  }
+}
+
 function App() {
   const[session,setSession]=useState(null);
   const[checking,setChecking]=useState(true);
@@ -3957,10 +3975,10 @@ function App() {
   if(session.role==='admin')return h(AdminPanel,{onLogout:()=>setSession(null),isDemo:session.isDemo||false});
   if(session.role==='wali')return h(WaliKelasPanel,{teacher:session.teacher,onLogout:()=>setSession(null),isDemo:session.isDemo||false});
   if(session.role==='mapel')return h(GuruMapelPanel,{teacher:session.teacher,onLogout:()=>setSession(null),isDemo:session.isDemo||false});
-  return h(StudentPanel,{student:session.student,onLogout:()=>setSession(null)});
+  return h(StudentPanel,{student:session.student,onLogout:()=>setSession(null),isDemo:session.isDemo||false});
 }
 
-ReactDOM.createRoot(document.getElementById('root')).render(h(App));
+ReactDOM.createRoot(document.getElementById('root')).render(h(ErrorBoundary,null,h(App)));
 </script>
 
 <!-- PWA Install Prompt -->
