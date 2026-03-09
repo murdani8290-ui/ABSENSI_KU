@@ -828,6 +828,11 @@ applyTheme(_currentTheme);
 // ================================================================
 // DEMO ACCOUNTS — data lokal, tidak menyentuh Supabase sama sekali
 // ================================================================
+function addDays(dateStr, days) {
+  const d = new Date(dateStr); d.setDate(d.getDate()+days);
+  return d.toISOString().slice(0,10);
+}
+
 const DEMO_STUDENT = {
   id:'demo-student-001', name:'Budi Santoso (Demo)', studentCode:'DEMO01',
   password:'demo123', kelas:'XII IPA 1', nis:'2024001', phone:'08123456789',
@@ -847,12 +852,7 @@ const DEMO_RECORDS = [
   {id:'dr3',studentId:'demo-student-001',studentCode:'DEMO01',studentName:'Budi Santoso (Demo)',date:addDays(todayStr(),-2),clockIn:'07:25',clockOut:'15:00',clockInStatus:'terlambat',clockOutStatus:'tepat',clockInPhoto:null,clockOutPhoto:null,deviceId:'demo',clockInDistance:80},
   {id:'dr4',studentId:'demo-student-001',studentCode:'DEMO01',studentName:'Budi Santoso (Demo)',date:addDays(todayStr(),-3),clockIn:'07:00',clockOut:'15:05',clockInStatus:'tepat',clockOutStatus:'tepat',clockInPhoto:null,clockOutPhoto:null,deviceId:'demo',clockInDistance:60},
   {id:'dr5',studentId:'demo-student-001',studentCode:'DEMO01',studentName:'Budi Santoso (Demo)',date:addDays(todayStr(),-4),clockIn:null,clockOut:null,clockInStatus:null,clockOutStatus:null,clockInPhoto:null,clockOutPhoto:null,deviceId:null,clockInDistance:null},
-];
-function addDays(dateStr, days) {
-  const d = new Date(dateStr); d.setDate(d.getDate()+days);
-  return d.toISOString().slice(0,10);
-}
-const DEMO_SETTINGS = {
+];const DEMO_SETTINGS = {
   schoolName:'AbsensiKu Demo', schoolStart:'07:00', schoolEnd:'15:00',
   deviceLock:false, locationName:'Sekolah Demo', locationLat:-6.2088,
   locationLng:106.8456, locationRadius:500, fonnteToken:'', fonnteDevice:'',
